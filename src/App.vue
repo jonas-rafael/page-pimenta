@@ -17,14 +17,30 @@ const bookingForm = ref({
 const isBooking = ref(false)
 const bookingStatus = ref('')
 
+function formatDate(dateStr: string) {
+  if (!dateStr) return ''
+  const [year, month, day] = dateStr.split('-')
+  return `${day}/${month}/${year}`
+}
+
 async function submitBooking() {
   isBooking.value = true
   try {
+    const msg = `Olá! Gostaria de solicitar uma reserva na Casa Pimenta:
+- *Nome:* ${bookingForm.value.nome}
+- *Check-in:* ${formatDate(bookingForm.value.dataInicio)}
+- *Check-out:* ${formatDate(bookingForm.value.dataFim)}
+- *Chegada prevista:* ${bookingForm.value.horario}
+- *Contato:* ${bookingForm.value.telefone}`
+
+    const encodedMsg = encodeURIComponent(msg)
+    const dynamicWhatsAppLink = `https://wa.me/${phone}?text=${encodedMsg}`
+
     setTimeout(() => {
       bookingStatus.value = 'success'
       isBooking.value = false
-      window.open(whatsappLink, '_blank')
-    }, 1500)
+      window.open(dynamicWhatsAppLink, '_blank')
+    }, 1200)
   } catch (error) {
     bookingStatus.value = 'error'
     isBooking.value = false
