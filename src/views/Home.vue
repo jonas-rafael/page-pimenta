@@ -35,7 +35,9 @@ const feriados2026 = [
 ]
 
 const pricing = computed(() => {
-  if (!bookingForm.value.dataInicio || !bookingForm.value.dataFim) return { total: 0, days: 0 }
+  const result: { total: number; days: number; isPackage?: boolean; error?: string } = { total: 0, days: 0 }
+  
+  if (!bookingForm.value.dataInicio || !bookingForm.value.dataFim) return result
 
   const start = new Date(bookingForm.value.dataInicio + 'T12:00:00')
   const end = new Date(bookingForm.value.dataFim + 'T12:00:00')
@@ -43,8 +45,12 @@ const pricing = computed(() => {
   const diffTime = end.getTime() - start.getTime()
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 
-  if (diffDays <= 0) return { total: 0, days: 0 }
+  if (diffDays <= 0) {
+    result.error = 'Data de fim deve ser posterior à data de início'
+    return result
+  }
 
+  result.days = diffDays
   const startDay = start.getUTCDay()
   const isWeekendPackage = diffDays === 3 && (startDay === 5 || startDay === 6)
 
@@ -57,12 +63,17 @@ const pricing = computed(() => {
     })
 
     if (hasHolidayOnCriticalDays) {
-      return { total: 900, days: diffDays, isPackage: true }
+      result.total = 900
+      result.isPackage = true
+      return result
     }
-    return { total: 800, days: diffDays, isPackage: true }
+    result.total = 800
+    result.isPackage = true
+    return result
   }
 
-  return { total: diffDays * 300, days: diffDays }
+  result.total = diffDays * 300
+  return result
 })
 
 function formatDate(dateStr: string) {

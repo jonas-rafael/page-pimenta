@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import App from './App.vue'
 import { supabase } from './lib/supabase'
-import flushPromises from 'flush-promises'
 
 // Mock Supabase
 vi.mock('./lib/supabase', () => ({
@@ -74,7 +73,7 @@ describe('App.vue (UI & Security)', () => {
     
     // Even if we submit, the payload should be treated as a string by the Supabase client
     // Here we verify it doesn't crash the component during reactive updates
-    expect(wrapper.find('input[type="text"]').element.value).toBe(xssPayload)
+    expect((wrapper.find('input[type="text"]').element as HTMLInputElement).value).toBe(xssPayload)
   })
 
   it('BUSINESS LOGIC: should show error if dates are invalid (integrated test)', async () => {

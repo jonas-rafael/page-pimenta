@@ -48,7 +48,7 @@ const stats = computed(() => {
 })
 
 function formatDate(dateStr: string) {
-  const [year, month, day] = dateStr.split('-')
+  const [_year, month, day] = dateStr.split('-')
   return `${day}/${month}`
 }
 
